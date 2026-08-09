@@ -3,12 +3,16 @@ export const styleIds = ['watercolor', 'classic-oil', 'modern-minimal', 'pop-col
 export const cropIds = ['close', 'balanced', 'spacious'] as const
 export const colorMoodIds = ['original', 'warm', 'cool', 'mono'] as const
 export const typeMoodIds = ['elegant', 'modern', 'bold'] as const
+export const intensityIds = ['soft', 'balanced', 'strong'] as const
+export const backgroundIds = ['paper', 'studio', 'wash', 'arch'] as const
 
 export type FormatId = typeof formatIds[number]
 export type StyleId = typeof styleIds[number]
 export type CropId = typeof cropIds[number]
 export type ColorMoodId = typeof colorMoodIds[number]
 export type TypeMoodId = typeof typeMoodIds[number]
+export type IntensityId = typeof intensityIds[number]
+export type BackgroundId = typeof backgroundIds[number]
 
 export const formats: Record<FormatId, {
   name: string
@@ -74,6 +78,8 @@ export function publicCatalog() {
       crops: cropIds,
       colorMoods: colorMoodIds,
       typeMoods: typeMoodIds,
+      intensities: intensityIds,
+      backgrounds: backgroundIds,
     },
   }
 }

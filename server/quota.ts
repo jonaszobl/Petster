@@ -6,6 +6,10 @@ export type Usage = {
   requestsLimit: number
   imagesUsed: number
   imagesLimit: number
+  used: number
+  limit: number
+  remaining: number
+  resetsAt: string
 }
 
 export interface QuotaStore {
@@ -24,7 +28,20 @@ function periodStart() {
 }
 
 function usage(limits: Limits, requestsUsed = 0, imagesUsed = 0): Usage {
-  return { periodStart: periodStart(), requestsUsed, requestsLimit: limits.requests, imagesUsed, imagesLimit: limits.images }
+  const start = periodStart()
+  const [year, month] = start.split('-').map(Number)
+  const resetsAt = new Date(Date.UTC(year, month, 1)).toISOString()
+  return {
+    periodStart: start,
+    requestsUsed,
+    requestsLimit: limits.requests,
+    imagesUsed,
+    imagesLimit: limits.images,
+    used: requestsUsed,
+    limit: limits.requests,
+    remaining: Math.max(0, limits.requests - requestsUsed),
+    resetsAt,
+  }
 }
 
 export class MemoryQuotaStore implements QuotaStore {

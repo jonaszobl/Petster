@@ -37,7 +37,21 @@ function imageFromRequest(request: Request) {
 function configFromRequest(request: Request) {
   try {
     const raw = typeof request.body?.config === 'string' ? JSON.parse(request.body.config) : request.body?.config ?? request.body
-    return generationConfigSchema.parse(raw)
+    const normalized = raw && typeof raw === 'object' && !Array.isArray(raw) && !('style' in raw)
+      ? {
+          format: raw.format,
+          variants: raw.variants,
+          style: {
+            artStyle: raw.artStyle,
+            crop: raw.crop,
+            colorMood: raw.colorMood,
+            typeMood: raw.typeMood,
+            intensity: raw.intensity ?? 'balanced',
+            background: raw.background ?? 'paper',
+          },
+        }
+      : raw
+    return generationConfigSchema.parse(normalized)
   } catch (error) {
     if (error instanceof ZodError) throw error
     throw Object.assign(new Error('Das Feld config enthält kein gültiges JSON.'), { status: 400, code: 'INVALID_CONFIG' })
@@ -120,6 +134,7 @@ export function createApp(options: { config: ServerConfig; quota: QuotaStore; ge
       response.status(201).json({
         id: requestId,
         images: result.images,
+        variants: result.images.map((image) => image.dataUrl),
         usage,
         upstreamRequestId: result.upstreamRequestId,
       })

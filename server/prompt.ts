@@ -14,6 +14,17 @@ export function buildPrompt(config: GenerationConfig) {
     cool: 'make the palette visibly cooler with slate, blue-gray, eucalyptus and cool ivory while keeping the animal recognizable',
     mono: 'use a strictly refined monochrome interpretation in graphite gray, charcoal and warm paper white',
   }[config.style.colorMood]
+  const intensity = {
+    soft: 'Keep the artistic treatment delicate and restrained, close to the reference photo with subtle medium texture.',
+    balanced: 'Use a clearly visible but natural artistic treatment with balanced detail, contrast and medium texture.',
+    strong: 'Use a bold, unmistakable artistic treatment with pronounced medium texture and confident contrast while preserving identity.',
+  }[config.style.intensity]
+  const background = {
+    paper: 'Use a calm, premium natural-paper background with subtle tactile grain.',
+    studio: 'Use a soft studio vignette that clearly focuses attention on the animal.',
+    wash: 'Use a restrained painterly color wash derived from the active palette.',
+    arch: 'Place one clean, gallery-like architectural arch behind the animal without adding clutter.',
+  }[config.style.background]
 
   return [
     'TASK',
@@ -36,6 +47,8 @@ export function buildPrompt(config: GenerationConfig) {
     `Background: ${profile.backdrop}.`,
     `Palette: ${profile.palette}; ${colorMood}.`,
     `Composition: ${crop}.`,
+    `Intensity: ${intensity}`,
+    `Background treatment: ${background}`,
     `Constraints: ${profile.constraints}.`,
     '',
     'LAYOUT',

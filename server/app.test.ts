@@ -76,16 +76,26 @@ test('supports the Lovable proxy endpoint aliases', async () => {
   const usageResponse = await fetch(`${baseUrl}/v1/usage`, {
     headers: { 'x-user-id': 'lovable-alias-user' },
   })
+  const usage = await usageResponse.json() as { used: number; limit: number; remaining: number }
   assert.equal(usageResponse.status, 200)
+  assert.equal(usage.used, 0)
+  assert.equal(usage.remaining, usage.limit)
 
   const response = await fetch(`${baseUrl}/v1/generate`, {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-user-id': 'lovable-alias-user' },
-    body: JSON.stringify(validBody),
+    body: JSON.stringify({
+      image: validBody.image,
+      config: {
+        format: 'a3', variants: 2, artStyle: 'watercolor', crop: 'balanced',
+        colorMood: 'warm', typeMood: 'elegant', intensity: 'strong', background: 'wash',
+      },
+    }),
   })
-  const body = await response.json() as { images: unknown[] }
+  const body = await response.json() as { images: unknown[]; variants: unknown[] }
   assert.equal(response.status, 201)
   assert.equal(body.images.length, 2)
+  assert.equal(body.variants.length, 2)
 })
 
 test('generates images and applies persistent monthly limits', async () => {
