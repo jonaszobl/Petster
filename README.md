@@ -51,10 +51,10 @@ Produktiv baut Railway mit `railway.json` Frontend und Backend und startet `npm 
 
 - `OPENAI_API_KEY`
 - `DATABASE_URL` aus einem Railway-PostgreSQL-Service
-- `AUTH_MODE=supabase`
-- `SUPABASE_URL`
+- `AUTH_MODE=lovable`
+- `LOVABLE_API_SECRET` (identisch als Secret in Lovable Cloud)
 - `ALLOWED_ORIGINS` mit der Lovable-Produktionsdomain
 
 Optionale Limits: `MONTHLY_GENERATION_LIMIT`, `MONTHLY_IMAGE_LIMIT`, `MAX_VARIANTS` und `REQUESTS_PER_MINUTE`.
 
-Die vollständige Lovable-Übergabe liegt in `lovable-assets/`. Dort befinden sich alle Stil- und Formatbilder, der Customizer-Katalog, die OpenAPI-Datei und ein fertiges Supabase-Aufrufbeispiel.
+Die vollständige Lovable-Übergabe liegt in `lovable-assets/`. Dort befinden sich alle Stil- und Formatbilder, der Customizer-Katalog, die OpenAPI-Datei und ein fertiges Lovable-Cloud-Proxy-Konzept. Railway benötigt keine Supabase-URL: Lovable Cloud authentifiziert den Nutzer und signiert interne Railway-Aufrufe mit `LOVABLE_API_SECRET`.

@@ -7,11 +7,14 @@ function positiveInt(value: string | undefined, fallback: number) {
 
 export function loadConfig(env = process.env) {
   const production = env.NODE_ENV === 'production'
-  const authMode: 'development' | 'supabase' = env.AUTH_MODE
-    ? env.AUTH_MODE === 'development' ? 'development' : 'supabase'
-    : production ? 'supabase' : 'development'
+  const authMode: 'development' | 'lovable' | 'supabase' = env.AUTH_MODE === 'development'
+    ? 'development'
+    : env.AUTH_MODE === 'supabase'
+      ? 'supabase'
+      : production || env.AUTH_MODE === 'lovable' ? 'lovable' : 'development'
   if (production && authMode === 'development') throw new Error('AUTH_MODE=development ist in Produktion nicht erlaubt.')
   if (production && !env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY ist erforderlich.')
+  if (authMode === 'lovable' && !env.LOVABLE_API_SECRET) throw new Error('LOVABLE_API_SECRET ist für AUTH_MODE=lovable erforderlich.')
   if (authMode === 'supabase' && !env.SUPABASE_URL) throw new Error('SUPABASE_URL ist für AUTH_MODE=supabase erforderlich.')
 
   return {
@@ -21,6 +24,7 @@ export function loadConfig(env = process.env) {
     openAiModel: env.OPENAI_IMAGE_MODEL || 'gpt-image-2',
     databaseUrl: env.DATABASE_URL,
     authMode,
+    lovableSecret: env.LOVABLE_API_SECRET,
     supabaseUrl: env.SUPABASE_URL,
     allowedOrigins: (env.ALLOWED_ORIGINS || 'http://localhost:5173,http://127.0.0.1:4173')
       .split(',').map((value) => value.trim()).filter(Boolean),

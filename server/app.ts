@@ -64,7 +64,7 @@ export function createApp(options: { config: ServerConfig; quota: QuotaStore; ge
       done(new Error('Origin nicht erlaubt.'))
     },
     methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Authorization', 'Content-Type', 'X-User-Id'],
+    allowedHeaders: ['Authorization', 'Content-Type', 'X-User-Id', 'X-Lovable-Secret'],
   }))
   app.use(express.json({ limit: '16mb' }))
   app.use('/assets', express.static(path.resolve('lovable-assets'), { maxAge: '7d', immutable: true, fallthrough: false }))
@@ -72,7 +72,11 @@ export function createApp(options: { config: ServerConfig; quota: QuotaStore; ge
   app.get('/health', (_request, response) => response.json({ ok: true, service: 'petster-image-api' }))
   app.get('/api/v1/catalog', (_request, response) => response.json(publicCatalog()))
 
-  const authenticate = createAuthMiddleware({ mode: config.authMode, supabaseUrl: config.supabaseUrl })
+  const authenticate = createAuthMiddleware({
+    mode: config.authMode,
+    lovableSecret: config.lovableSecret,
+    supabaseUrl: config.supabaseUrl,
+  })
   const limiter = rateLimit({
     windowMs: 60_000,
     limit: config.limits.requestsPerMinute,

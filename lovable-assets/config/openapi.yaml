@@ -17,13 +17,13 @@ paths:
         '200': { description: Formats, styles and allowed customizing values }
   /api/v1/usage:
     get:
-      security: [{ bearerAuth: [] }]
+      security: [{ lovableProxy: [] }]
       responses:
         '200': { description: Current monthly usage }
-        '401': { description: Invalid or missing Supabase access token }
+        '401': { description: Invalid Lovable Cloud proxy signature or missing user ID }
   /api/v1/generations:
     post:
-      security: [{ bearerAuth: [] }]
+      security: [{ lovableProxy: [] }]
       requestBody:
         required: true
         content:
@@ -46,12 +46,16 @@ paths:
       responses:
         '201': { description: Generated WebP images as data URLs plus usage }
         '400': { description: Invalid image or configuration }
-        '401': { description: Invalid or missing Supabase access token }
+        '401': { description: Invalid Lovable Cloud proxy signature or missing user ID }
         '413': { description: Image too large }
         '429': { description: Rate or monthly limit reached }
 components:
   securitySchemes:
-    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+    lovableProxy:
+      type: apiKey
+      in: header
+      name: X-Lovable-Secret
+      description: Server-only secret. Requests must also contain X-User-Id.
   schemas:
     GenerationConfig:
       type: object

@@ -1,57 +1,51 @@
-# Petster: Lovable → Railway
+# Petster: Lovable Cloud → Railway → Shopify
 
-Dieser Ordner enthält alle Vorschau-Assets und die verbindliche Customizer-Konfiguration.
+## Architektur
 
-## Ordner
+Der Browser spricht für geschützte Aktionen ausschließlich mit Lovable Cloud. Lovable Auth liefert den Nutzer, Edge Functions halten alle Secrets und Railway übernimmt Bildgenerierung sowie persistente Monatslimits. Railway benötigt keine Supabase-URL.
 
-- `config/customizer-config.json`: vollständige Auswahlwerte, CSS-Filter und Assetpfade
-- `config/preview-rules.css`: direkt übertragbare Regeln für Live-Filter, Crop und Typografie
-- `config/openapi.yaml`: API-Vertrag des Railway-Backends
-- `format-previews/`: drei maßstäblich unterschiedliche Raumansichten für A4, A3 und A2
-- `style-previews/`: fünf Stilbeispiele
-- `demo/golden-source.jpg`: neutrales Demo-Referenzfoto
-- `LOVABLE-BUILD-PROMPT.md`: fertiger Arbeitsauftrag für Lovable
+### Erforderliche Lovable-Cloud-Secrets
 
-## Authentifizierung
+- `RAILWAY_API_URL`
+- `LOVABLE_API_SECRET` (identisch mit Railway)
+- `SHOPIFY_STORE_DOMAIN`
+- `SHOPIFY_STOREFRONT_ACCESS_TOKEN`
+- `SHOPIFY_PRODUCT_GID`
 
-Lovable verwendet Supabase Auth. Vor jeder geschützten Anfrage die Session lesen und das Access Token senden:
+### Erforderliche Railway-Variablen
+
+- `OPENAI_API_KEY`
+- `DATABASE_URL`
+- `AUTH_MODE=lovable`
+- `LOVABLE_API_SECRET`
+- `ALLOWED_ORIGINS=https://*.lovable.app`
+
+## Geschützte Edge Functions
+
+Jede Function liest den Bearer-Token des Browsers, validiert ihn mit `supabase.auth.getUser(token)` und verwendet `user.id`. An Railway sendet sie:
 
 ```ts
-const { data: { session } } = await supabase.auth.getSession()
-if (!session) throw new Error('Bitte melde dich an.')
-
-const form = new FormData()
-form.append('image', selectedFile)
-form.append('config', JSON.stringify({
-  format: 'a3',
-  variants: 4,
-  style: {
-    artStyle: 'watercolor',
-    crop: 'balanced',
-    colorMood: 'warm',
-    typeMood: 'elegant'
-  }
-}))
-
-const response = await fetch(`${RAILWAY_API_URL}/api/v1/generations`, {
-  method: 'POST',
-  headers: { Authorization: `Bearer ${session.access_token}` },
-  body: form
-})
-const result = await response.json()
-if (!response.ok) throw new Error(result.error?.message ?? 'Generierung fehlgeschlagen')
-const imageUrls = result.images.map((image: { dataUrl: string }) => image.dataUrl)
+headers: {
+  'X-Lovable-Secret': Deno.env.get('LOVABLE_API_SECRET')!,
+  'X-User-Id': user.id,
+}
 ```
 
-Den `OPENAI_API_KEY` niemals in Lovable oder im Browser speichern. Er liegt ausschließlich als Railway-Variable vor.
+`petster-generate` übernimmt den Multipart-Body mit `image` und `config` und leitet ihn an `POST /api/v1/generations` weiter. `petster-usage` ruft `GET /api/v1/usage` auf. API-Fehler, Statuscodes und `Retry-After` werden unverändert an den Browser zurückgegeben. Es gibt keine automatische Wiederholung.
 
-## Empfohlener Ablauf
+## Shopify
 
-1. Beim Start `GET /api/v1/catalog` laden oder `customizer-config.json` lokal bundeln.
-2. Die Vorschau vollständig im Browser aus den CSS-Werten der Konfiguration berechnen.
-3. Vor der Generierung `GET /api/v1/usage` abrufen und das verbleibende Monatskontingent anzeigen.
-4. Bild und ausschließlich die vier IDs als `multipart/form-data` an Railway senden.
-5. Texte erst im Lovable-Frontend über die generierte Artwork-Ebene legen.
-6. Bei `MONTHLY_LIMIT_REACHED` keine automatische Wiederholung starten.
+`shopify-create-cart` authentifiziert den Nutzer, fragt das konfigurierte Produkt über die Shopify Storefront GraphQL API ab, ordnet `a4`, `a3` und `a2` exakt den entsprechenden Varianten zu und erstellt einen Cart. Die Line Attributes enthalten `petster_generation_id`, `format`, Stil-IDs sowie die finalen Textwerte. Die Function gibt ausschließlich `{ checkoutUrl }` zurück. Token und Produkt-GID gelangen nie in den Browser.
 
-Das Backend begrenzt Uploads auf 12 MB, normalisiert Bilder serverseitig, erlaubt maximal vier Varianten und ignoriert keine unbekannten Customizing-Werte.
+## Frontend-Ablauf
+
+1. Foto lokal validieren und auf maximal 12 MB begrenzen.
+2. Format A4/A3/A2 anhand der Raumansichten wählen.
+3. Stil, Crop, Farbwelt und Typografie mit sofort sichtbarer Vorschau wählen.
+4. Texte als separate, sichere Overlay-Ebene erfassen.
+5. Vor Generierung `petster-usage` laden.
+6. `petster-generate` bewusst einmal auslösen und vier Varianten anzeigen.
+7. Favorit wählen; im Warenkorb Format und Poster-Daten an `shopify-create-cart` senden.
+8. Zum zurückgegebenen Shopify Checkout navigieren.
+
+Bei `MONTHLY_LIMIT_REACHED` wird keine Generierung gestartet. Nach Netzwerkfehlern darf nur ein expliziter Klick erneut senden.
