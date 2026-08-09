@@ -1,4 +1,5 @@
 import path from 'node:path'
+import fs from 'node:fs'
 import { randomUUID } from 'node:crypto'
 import cors from 'cors'
 import express, { type NextFunction, type Request, type Response } from 'express'
@@ -86,14 +87,14 @@ export function createApp(options: { config: ServerConfig; quota: QuotaStore; ge
     message: { error: { code: 'RATE_LIMITED', message: 'Zu viele Anfragen. Bitte warte kurz.' } },
   })
 
-  app.get('/api/v1/usage', authenticate, async (request: AuthenticatedRequest, response, next) => {
+  app.get(['/api/v1/usage', '/v1/usage'], authenticate, async (request: AuthenticatedRequest, response, next) => {
     try {
       response.setHeader('Cache-Control', 'no-store')
       response.json(await quota.get(request.userId!))
     } catch (error) { next(error) }
   })
 
-  app.post('/api/v1/generations', authenticate, limiter, upload.single('image'), async (request: AuthenticatedRequest, response, next) => {
+  app.post(['/api/v1/generations', '/v1/generate'], authenticate, limiter, upload.single('image'), async (request: AuthenticatedRequest, response, next) => {
     const requestId = randomUUID()
     let reservedImages = 0
     try {
@@ -128,11 +129,12 @@ export function createApp(options: { config: ServerConfig; quota: QuotaStore; ge
     }
   })
 
-  if (config.production) {
-    app.use(express.static(path.resolve('dist')))
+  const frontendDirectory = path.resolve('dist')
+  if (config.production && fs.existsSync(path.join(frontendDirectory, 'index.html'))) {
+    app.use(express.static(frontendDirectory))
     app.use((request, response, next) => {
       if (request.method === 'GET' && request.accepts('html')) {
-        response.sendFile(path.resolve('dist/index.html'))
+        response.sendFile(path.join(frontendDirectory, 'index.html'))
         return
       }
       next()

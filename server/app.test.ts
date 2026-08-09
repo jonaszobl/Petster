@@ -72,6 +72,22 @@ test('accepts the multipart request used by Lovable', async () => {
   assert.equal(body.images.length, 2)
 })
 
+test('supports the Lovable proxy endpoint aliases', async () => {
+  const usageResponse = await fetch(`${baseUrl}/v1/usage`, {
+    headers: { 'x-user-id': 'lovable-alias-user' },
+  })
+  assert.equal(usageResponse.status, 200)
+
+  const response = await fetch(`${baseUrl}/v1/generate`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-user-id': 'lovable-alias-user' },
+    body: JSON.stringify(validBody),
+  })
+  const body = await response.json() as { images: unknown[] }
+  assert.equal(response.status, 201)
+  assert.equal(body.images.length, 2)
+})
+
 test('generates images and applies persistent monthly limits', async () => {
   for (let index = 0; index < 2; index += 1) {
     const response = await fetch(`${baseUrl}/api/v1/generations`, {
