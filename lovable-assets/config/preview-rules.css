@@ -1,0 +1,29 @@
+/* Apply variables from customizer-config.json to .petster-preview. */
+.petster-preview {
+  position: relative;
+  overflow: hidden;
+  background: var(--swatch-3, #eee9df);
+}
+
+.petster-preview > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: var(--preview-filter, none);
+  transform: scale(var(--crop-scale, 1.04));
+  object-position: var(--crop-position, 50% 47%);
+  transition: transform .32s ease, filter .28s ease, object-position .32s ease;
+}
+
+.petster-preview::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--preview-overlay, transparent);
+  pointer-events: none;
+}
+
+.petster-preview__name { font-size: 27px; line-height: .95; }
+.petster-preview[data-type='elegant'] .petster-preview__name { font-family: 'Playfair Display', serif; font-weight: 700; }
+.petster-preview[data-type='modern'] .petster-preview__name { font-family: 'DM Sans', sans-serif; font-weight: 500; letter-spacing: -1px; }
+.petster-preview[data-type='bold'] .petster-preview__name { font-family: 'DM Sans', sans-serif; font-weight: 800; letter-spacing: -1.6px; text-transform: uppercase; }

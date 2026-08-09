@@ -1,0 +1,75 @@
+.format-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.format-card {
+  overflow: hidden;
+  padding: 0;
+  border-radius: 11px;
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+.format-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 9px 24px #33453a12;
+}
+
+.format-card.selected {
+  padding: 0;
+  border: 2px solid #294e3f;
+  box-shadow: 0 8px 24px #294e3f14;
+}
+
+.format-room {
+  position: relative;
+  height: 145px;
+  overflow: hidden;
+  background: #e8e2d8;
+}
+
+.format-room img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform .25s ease;
+}
+
+.format-card:hover .format-room img { transform: scale(1.02); }
+
+.format-room > span {
+  position: absolute;
+  left: 10px;
+  bottom: 9px;
+  padding: 4px 7px;
+  border-radius: 20px;
+  background: #183b31df;
+  color: #e8f5a8;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .8px;
+}
+
+.format-card .radio {
+  z-index: 2;
+  width: 19px;
+  height: 19px;
+  border-color: #ffffffaa;
+  background: #ffffffdb;
+}
+
+.format-card.selected .radio {
+  background: #294e3f;
+  border-color: #294e3f;
+}
+
+.format-copy { padding: 13px 14px 15px; }
+.format-card .format-copy h3 { font: 700 15px 'Playfair Display', serif; }
+.format-card .format-copy b { font-size: 10.5px; margin: 4px 0; color: #59665e; }
+.format-card .format-copy small { display: block; min-height: 26px; font-size: 9.5px; line-height: 1.4; color: #8a928d; }
+
+@media (max-width: 620px) {
+  .format-grid { grid-template-columns: 1fr; }
+  .format-room { height: 170px; }
+}

@@ -1,0 +1,71 @@
+openapi: 3.1.0
+info:
+  title: Petster Image API
+  version: 1.0.0
+servers:
+  - url: https://YOUR-SERVICE.up.railway.app
+paths:
+  /health:
+    get:
+      security: []
+      responses:
+        '200': { description: Service healthy }
+  /api/v1/catalog:
+    get:
+      security: []
+      responses:
+        '200': { description: Formats, styles and allowed customizing values }
+  /api/v1/usage:
+    get:
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: Current monthly usage }
+        '401': { description: Invalid or missing Supabase access token }
+  /api/v1/generations:
+    post:
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image, config]
+              properties:
+                image: { type: string, format: binary }
+                config:
+                  type: string
+                  description: JSON string matching GenerationConfig
+          application/json:
+            schema:
+              type: object
+              required: [image, config]
+              properties:
+                image: { type: string, description: JPEG/PNG/WebP data URL }
+                config: { $ref: '#/components/schemas/GenerationConfig' }
+      responses:
+        '201': { description: Generated WebP images as data URLs plus usage }
+        '400': { description: Invalid image or configuration }
+        '401': { description: Invalid or missing Supabase access token }
+        '413': { description: Image too large }
+        '429': { description: Rate or monthly limit reached }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  schemas:
+    GenerationConfig:
+      type: object
+      additionalProperties: false
+      required: [format, style]
+      properties:
+        format: { type: string, enum: [a4, a3, a2] }
+        variants: { type: integer, minimum: 1, maximum: 4, default: 4 }
+        style:
+          type: object
+          additionalProperties: false
+          required: [artStyle, crop, colorMood, typeMood]
+          properties:
+            artStyle: { type: string, enum: [watercolor, classic-oil, modern-minimal, pop-color, pencil-sketch] }
+            crop: { type: string, enum: [close, balanced, spacious] }
+            colorMood: { type: string, enum: [original, warm, cool, mono] }
+            typeMood: { type: string, enum: [elegant, modern, bold] }
