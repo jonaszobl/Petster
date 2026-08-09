@@ -30,8 +30,8 @@ export function loadConfig(env = process.env) {
       .split(',').map((value) => value.trim()).filter(Boolean),
     limits: {
       requests: positiveInt(env.MONTHLY_GENERATION_LIMIT, 10),
-      images: positiveInt(env.MONTHLY_IMAGE_LIMIT, 40),
-      maxVariants: Math.min(4, positiveInt(env.MAX_VARIANTS, 4)),
+      images: positiveInt(env.MONTHLY_IMAGE_LIMIT, 20),
+      maxVariants: Math.min(2, positiveInt(env.MAX_VARIANTS, 2)),
       requestsPerMinute: positiveInt(env.REQUESTS_PER_MINUTE, 4),
     },
   }
