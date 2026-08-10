@@ -277,7 +277,7 @@ function Generating({
 
     const timer = window.setInterval(()=>setProgress(p=>{
       const next = Math.min(88,p+2)
-      if(next>35)setLabel('Vier Kompositionen entstehen')
+      if(next>35)setLabel('Zwei Kompositionen entstehen')
       if(next>72)setLabel('Layout & Texte werden gesetzt')
       return next
     }),900)
@@ -294,8 +294,9 @@ function Generating({
             image,
             config: {
               format,
-              variants: 4,
+              variants: 2,
               style,
+              copy: {name:petName,subtitle,detail,quote},
             },
           }),
         })
@@ -319,14 +320,12 @@ function Generating({
     return()=>{cancelled=true;window.clearInterval(timer)}
   },[attempt])
 
-  return <div className="generation"><a className="brand"><span className="brand-mark"><PawPrint size={20}/></span><span>petster</span></a><div className="gen-orbit"><div><PawPrint size={34}/></div><i/><i/><i/></div><p className="eyebrow">DEINE POSTER ENTSTEHEN</p><h1>{error?'Das hat noch nicht geklappt.':<>Ein bisschen Magie braucht<br/>einen kleinen Moment.</>}</h1><p className="gen-copy">{error||<>Vier Varianten werden verbindlich im Stil <b>{styleDefinition.name}</b> aufgebaut und geprüft.</>}</p><div className="progress"><span style={{width:`${progress}%`}}/><b>{progress}%</b></div>{error?<div className="gen-status"><button className="primary" onClick={()=>setAttempt(value=>value+1)}><RefreshCw size={17}/> Erneut versuchen</button><button className="back" onClick={onBack}><ArrowLeft size={17}/> Angaben ändern</button></div>:<div className="gen-status"><LoaderCircle className="spin" size={17}/>{label}</div>}<small>Stilprofil gesperrt · Bitte schließe dieses Fenster nicht.</small></div>
+  return <div className="generation"><a className="brand"><span className="brand-mark"><PawPrint size={20}/></span><span>petster</span></a><div className="gen-orbit"><div><PawPrint size={34}/></div><i/><i/><i/></div><p className="eyebrow">DEINE POSTER ENTSTEHEN</p><h1>{error?'Das hat noch nicht geklappt.':<>Ein bisschen Magie braucht<br/>einen kleinen Moment.</>}</h1><p className="gen-copy">{error||<>Zwei Varianten werden inklusive Typografie im Stil <b>{styleDefinition.name}</b> aufgebaut und geprüft.</>}</p><div className="progress"><span style={{width:`${progress}%`}}/><b>{progress}%</b></div>{error?<div className="gen-status"><button className="primary" onClick={()=>setAttempt(value=>value+1)}><RefreshCw size={17}/> Erneut versuchen</button><button className="back" onClick={onBack}><ArrowLeft size={17}/> Angaben ändern</button></div>:<div className="gen-status"><LoaderCircle className="spin" size={17}/>{label}</div>}<small>Stilprofil und Schreibweise gesperrt · Bitte schließe dieses Fenster nicht.</small></div>
 }
 
 const resultVariants = [
   { name: 'Galerie', note: 'Ruhig & klassisch' },
   { name: 'Editorial', note: 'Mit mehr Weißraum' },
-  { name: 'Signatur', note: 'Motiv im Fokus' },
-  { name: 'Statement', note: 'Mutige Typografie' },
 ]
 
 function Results({images,format,style,petName,subtitle,detail,quote,selected,setSelected,onBack,onRegenerate}:{images:GeneratedImages,format:string,style:StyleConfig,petName:string,subtitle:string,detail:string,quote:string,selected:number|null,setSelected:(n:number|null)=>void,onBack:()=>void,onRegenerate:()=>void}) {
@@ -334,23 +333,15 @@ function Results({images,format,style,petName,subtitle,detail,quote,selected,set
   return <div className="results-page">
     <header className="topbar"><a className="brand"><span className="brand-mark"><PawPrint size={20}/></span><span>petster</span></a><div className="lab-pill"><span/> POSTER LAB <b>INTERN</b></div><button className="avatar">MK</button></header>
     <main className="results-main">
-      <div className="results-head"><div><p className="eyebrow"><CheckCircle2/> 4 VON 4 QUALITÄTSPRÜFUNGEN BESTANDEN</p><h1>Da ist dein Wow-Moment.</h1><p>Alle vier Varianten wurden verbindlich im Stil <b>{selectedStyle.name}</b> erstellt.</p></div><button className="outline" onClick={onBack}><ArrowLeft size={17}/> Angaben ändern</button></div>
+      <div className="results-head"><div><p className="eyebrow"><CheckCircle2/> 2 VON 2 POSTERN ERSTELLT</p><h1>Da ist dein Wow-Moment.</h1><p>Beide Varianten wurden inklusive Text im Stil <b>{selectedStyle.name}</b> generiert.</p></div><button className="outline" onClick={onBack}><ArrowLeft size={17}/> Angaben ändern</button></div>
       <div className="result-style-bar"><div><img src={selectedStyle.image} alt=""/><span><small>GEWÄHLTER STIL</small><b>{selectedStyle.name}</b></span></div><p><ShieldCheck size={15}/> Vorschau und Ergebnisse verwenden dasselbe Stilprofil.</p></div>
       <div className="posters">{resultVariants.map((variant,i)=><button className={`poster-choice ${selected===i?'selected':''}`} key={variant.name} onClick={()=>setSelected(i)}>
         <div className={`poster poster-format-${format.replace(':', '')} styled-poster style-${selectedStyle.id} mood-${style.colorMood} type-${style.typeMood} crop-${style.crop} result-variant-${i+1}`}>
           <img src={images[i] ?? selectedStyle.image} alt={`${petName} – ${selectedStyle.name}, Variante ${i+1}`}/>
-          <div className="poster-type-safe-zone" aria-hidden="true"/>
-          <div className={`poster-copy ${petName.length > 18 ? 'name-very-long' : petName.length > 11 ? 'name-long' : ''}`}>
-            {detail && <small>{detail}</small>}
-            <h2>{petName}</h2>
-            {subtitle && <p>{subtitle}</p>}
-            {quote && <blockquote>{quote}</blockquote>}
-          </div>
-          <span className="edition">0{i+1}</span>
         </div>
         <div className="choice-label"><span>{selected===i?<Check/>:String(i+1).padStart(2,'0')}</span><div><b>{variant.name}</b><small>{variant.note}</small></div></div>
       </button>)}</div>
-      <div className="result-actions"><button className="back" onClick={onRegenerate}><RefreshCw size={17}/> Vier neue Varianten</button><div className="result-hint"><Info size={15}/> Für Stiländerungen bitte „Angaben ändern“ verwenden.</div><button className="primary" disabled={selected===null}>Variante auswählen <ArrowRight size={18}/></button></div>
+      <div className="result-actions"><button className="back" onClick={onRegenerate}><RefreshCw size={17}/> Zwei neue Varianten</button><div className="result-hint"><Info size={15}/> Bitte prüfe die Schreibweise vor der Auswahl.</div><button className="primary" disabled={selected===null}>Variante auswählen <ArrowRight size={18}/></button></div>
     </main>
   </div>
 }

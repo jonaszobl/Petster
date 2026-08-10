@@ -49,6 +49,7 @@ const validBody = {
     format: 'a3',
     variants: 2,
     style: { artStyle: 'watercolor', crop: 'balanced', colorMood: 'warm', typeMood: 'elegant' },
+    copy: { name: 'Hundi', subtitle: '', detail: '', quote: '' },
   },
 }
 

@@ -18,7 +18,7 @@ const upload = multer({
   storage: multer.memoryStorage(),
   // `config` is canonical. The extra fields keep older Lovable clients that
   // also send every validated config key individually backward compatible.
-  limits: { fileSize: 12 * 1024 * 1024, files: 1, fields: 12 },
+  limits: { fileSize: 12 * 1024 * 1024, files: 1, fields: 20 },
   fileFilter: (_request, file, done) => {
     done(null, ['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype))
   },
@@ -51,6 +51,14 @@ function configFromRequest(request: Request) {
             intensity: raw.intensity ?? 'balanced',
             background: raw.background ?? 'paper',
           },
+          ...((raw.petName || raw.name) ? {
+            copy: {
+              name: raw.petName ?? raw.name,
+              subtitle: raw.subtitle ?? '',
+              detail: raw.detail ?? '',
+              quote: raw.quote ?? '',
+            },
+          } : {}),
         }
       : raw
     return generationConfigSchema.parse(normalized)

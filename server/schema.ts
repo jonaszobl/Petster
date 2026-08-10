@@ -11,6 +11,12 @@ export const generationConfigSchema = z.object({
     intensity: z.enum(intensityIds).default('balanced'),
     background: z.enum(backgroundIds).default('paper'),
   }).strict(),
+  copy: z.object({
+    name: z.string().trim().min(1).max(24),
+    subtitle: z.string().trim().max(40).default(''),
+    detail: z.string().trim().max(32).default(''),
+    quote: z.string().trim().max(54).default(''),
+  }).strict().optional(),
   variants: z.number().int().min(1).optional(),
 }).strict()
 
