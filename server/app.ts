@@ -16,7 +16,9 @@ import { generationConfigSchema } from './schema.js'
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 12 * 1024 * 1024, files: 1, fields: 5 },
+  // `config` is canonical. The extra fields keep older Lovable clients that
+  // also send every validated config key individually backward compatible.
+  limits: { fileSize: 12 * 1024 * 1024, files: 1, fields: 12 },
   fileFilter: (_request, file, done) => {
     done(null, ['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype))
   },
@@ -81,7 +83,10 @@ export function createApp(options: { config: ServerConfig; quota: QuotaStore; ge
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Authorization', 'Content-Type', 'X-User-Id', 'X-Lovable-Secret'],
   }))
-  app.use(express.json({ limit: '16mb' }))
+  // A 12 MiB binary image expands to roughly 16 MiB as base64, plus JSON
+  // framing. Multipart remains preferred, but the documented JSON fallback
+  // must accept the same effective image ceiling.
+  app.use(express.json({ limit: '18mb' }))
   app.use('/assets', express.static(path.resolve('lovable-assets'), { maxAge: '7d', immutable: true, fallthrough: false }))
 
   app.get('/health', (_request, response) => response.json({ ok: true, service: 'petster-image-api' }))

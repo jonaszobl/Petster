@@ -64,6 +64,15 @@ test('accepts the multipart request used by Lovable', async () => {
   const form = new FormData()
   form.append('image', new Blob([new TextEncoder().encode('mock-image')], { type: 'image/jpeg' }), 'pet.jpg')
   form.append('config', JSON.stringify(validBody.config))
+  form.append('userId', 'multipart-user')
+  form.append('format', 'a3')
+  form.append('variants', '2')
+  form.append('artStyle', 'watercolor')
+  form.append('crop', 'balanced')
+  form.append('colorMood', 'warm')
+  form.append('typeMood', 'elegant')
+  form.append('intensity', 'balanced')
+  form.append('background', 'paper')
   const response = await fetch(`${baseUrl}/api/v1/generations`, {
     method: 'POST', headers: { 'x-user-id': 'multipart-user' }, body: form,
   })
