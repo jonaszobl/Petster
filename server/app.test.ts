@@ -82,6 +82,21 @@ test('accepts the multipart request used by Lovable', async () => {
   assert.equal(body.images.length, 2)
 })
 
+test('merges legacy Lovable text fields into canonical config', async () => {
+  const form = new FormData()
+  const { copy: _copy, ...configWithoutCopy } = validBody.config
+  form.append('image', new Blob([new TextEncoder().encode('mock-image')], { type: 'image/jpeg' }), 'pet.jpg')
+  form.append('config', JSON.stringify(configWithoutCopy))
+  form.append('petName', 'Käthe')
+  form.append('subtitle', 'Sennenhund')
+  form.append('detail', 'Wien')
+  form.append('quote', 'Für immer.')
+  const response = await fetch(`${baseUrl}/api/v1/generations`, {
+    method: 'POST', headers: { 'x-user-id': 'legacy-copy-user' }, body: form,
+  })
+  assert.equal(response.status, 201)
+})
+
 test('supports the Lovable proxy endpoint aliases', async () => {
   const usageResponse = await fetch(`${baseUrl}/v1/usage`, {
     headers: { 'x-user-id': 'lovable-alias-user' },

@@ -39,7 +39,14 @@ function imageFromRequest(request: Request) {
 function configFromRequest(request: Request) {
   try {
     const raw = typeof request.body?.config === 'string' ? JSON.parse(request.body.config) : request.body?.config ?? request.body
-    const normalized = raw && typeof raw === 'object' && !Array.isArray(raw) && !('style' in raw)
+    const externalName = request.body?.petName ?? request.body?.name
+    const externalCopy = externalName ? {
+      name: externalName,
+      subtitle: request.body?.subtitle ?? '',
+      detail: request.body?.detail ?? '',
+      quote: request.body?.quote ?? '',
+    } : undefined
+    const normalizedBase = raw && typeof raw === 'object' && !Array.isArray(raw) && !('style' in raw)
       ? {
           format: raw.format,
           variants: raw.variants,
@@ -61,6 +68,10 @@ function configFromRequest(request: Request) {
           } : {}),
         }
       : raw
+    const normalized = normalizedBase && typeof normalizedBase === 'object' && !Array.isArray(normalizedBase)
+      && !('copy' in normalizedBase) && externalCopy
+      ? { ...normalizedBase, copy: externalCopy }
+      : normalizedBase
     return generationConfigSchema.parse(normalized)
   } catch (error) {
     if (error instanceof ZodError) throw error

@@ -91,6 +91,15 @@ components:
       properties:
         format: { type: string, enum: [a4, a3, a2] }
         variants: { type: integer, minimum: 1, maximum: 2, default: 2 }
+        copy:
+          type: object
+          additionalProperties: false
+          required: [name]
+          properties:
+            name: { type: string, minLength: 1, maxLength: 24 }
+            subtitle: { type: string, maxLength: 40, default: '' }
+            detail: { type: string, maxLength: 32, default: '' }
+            quote: { type: string, maxLength: 54, default: '' }
         style:
           type: object
           additionalProperties: false

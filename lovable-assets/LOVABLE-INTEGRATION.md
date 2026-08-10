@@ -44,9 +44,9 @@ headers: {
 1. Foto lokal validieren und auf maximal 12 MB begrenzen.
 2. Format A4/A3/A2 anhand der Raumansichten wählen.
 3. Stil, Crop, Farbwelt und Typografie mit sofort sichtbarer Vorschau wählen.
-4. Texte als separate, sichere Overlay-Ebene erfassen.
+4. Texte erfassen und als `config.copy` an `petster-generate` senden. Die Bild-KI integriert sie direkt in das Poster; im Ergebnis darf kein zusätzliches Text-Overlay gerendert werden.
 5. Vor Generierung `petster-usage` laden.
-6. `petster-generate` bewusst einmal auslösen und zwei Varianten anzeigen.
+6. `petster-generate` bewusst einmal auslösen und zwei vollständige Varianten inklusive KI-generierter Typografie anzeigen. Vor der Auswahl auf exakte Schreibweise hinweisen.
 7. Favorit wählen; im Warenkorb Format und Poster-Daten an `shopify-create-cart` senden.
 8. Zum zurückgegebenen Shopify Checkout navigieren.
 
