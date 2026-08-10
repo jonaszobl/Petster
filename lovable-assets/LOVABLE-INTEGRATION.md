@@ -19,6 +19,8 @@ Der Browser spricht für geschützte Aktionen ausschließlich mit Lovable Cloud.
 - `AUTH_MODE=lovable`
 - `LOVABLE_API_SECRET`
 - `ALLOWED_ORIGINS=https://*.lovable.app`
+- `MAX_VARIANTS=2`
+- `MONTHLY_IMAGE_LIMIT=20`
 
 ## Geschützte Edge Functions
 
@@ -31,7 +33,7 @@ headers: {
 }
 ```
 
-`petster-generate` übernimmt den Multipart-Body mit `image` und `config` und leitet ihn an `POST /api/v1/generations` weiter. `petster-usage` ruft `GET /api/v1/usage` auf. API-Fehler, Statuscodes und `Retry-After` werden unverändert an den Browser zurückgegeben. Es gibt keine automatische Wiederholung.
+`petster-generate` übernimmt den Multipart-Body mit `image` und `config` und leitet ihn an `POST /v1/generate` weiter. `petster-usage` ruft `GET /v1/usage` auf. Die Legacy-Aliasse `/api/v1/generations` und `/api/v1/usage` bleiben kompatibel. API-Fehler, Statuscodes und `Retry-After` werden unverändert an den Browser zurückgegeben. Es gibt keine automatische Wiederholung.
 
 ## Shopify
 
@@ -44,7 +46,7 @@ headers: {
 3. Stil, Crop, Farbwelt und Typografie mit sofort sichtbarer Vorschau wählen.
 4. Texte als separate, sichere Overlay-Ebene erfassen.
 5. Vor Generierung `petster-usage` laden.
-6. `petster-generate` bewusst einmal auslösen und vier Varianten anzeigen.
+6. `petster-generate` bewusst einmal auslösen und zwei Varianten anzeigen.
 7. Favorit wählen; im Warenkorb Format und Poster-Daten an `shopify-create-cart` senden.
 8. Zum zurückgegebenen Shopify Checkout navigieren.
 

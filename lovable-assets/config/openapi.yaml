@@ -21,6 +21,12 @@ paths:
       responses:
         '200': { description: Current monthly usage }
         '401': { description: Invalid Lovable Cloud proxy signature or missing user ID }
+  /v1/usage:
+    get:
+      security: [{ lovableProxy: [] }]
+      responses:
+        '200': { description: Current monthly usage }
+        '401': { description: Invalid Lovable Cloud proxy signature or missing user ID }
   /api/v1/generations:
     post:
       security: [{ lovableProxy: [] }]
@@ -49,6 +55,27 @@ paths:
         '401': { description: Invalid Lovable Cloud proxy signature or missing user ID }
         '413': { description: Image too large }
         '429': { description: Rate or monthly limit reached }
+  /v1/generate:
+    post:
+      security: [{ lovableProxy: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image, config]
+              properties:
+                image: { type: string, format: binary }
+                config:
+                  type: string
+                  description: JSON string matching GenerationConfig
+      responses:
+        '201': { description: Generated WebP images in both variants and legacy images fields plus usage }
+        '400': { description: Invalid image or configuration }
+        '401': { description: Invalid Lovable Cloud proxy signature or missing user ID }
+        '413': { description: Image too large }
+        '429': { description: Rate or monthly limit reached }
 components:
   securitySchemes:
     lovableProxy:
@@ -63,13 +90,15 @@ components:
       required: [format, style]
       properties:
         format: { type: string, enum: [a4, a3, a2] }
-        variants: { type: integer, minimum: 1, maximum: 4, default: 4 }
+        variants: { type: integer, minimum: 1, maximum: 2, default: 2 }
         style:
           type: object
           additionalProperties: false
-          required: [artStyle, crop, colorMood, typeMood]
+          required: [artStyle, crop, colorMood, typeMood, intensity, background]
           properties:
             artStyle: { type: string, enum: [watercolor, classic-oil, modern-minimal, pop-color, pencil-sketch] }
             crop: { type: string, enum: [close, balanced, spacious] }
             colorMood: { type: string, enum: [original, warm, cool, mono] }
             typeMood: { type: string, enum: [elegant, modern, bold] }
+            intensity: { type: string, enum: [soft, balanced, expressive] }
+            background: { type: string, enum: [paper, studio, gradient] }

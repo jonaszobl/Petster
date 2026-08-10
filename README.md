@@ -1,6 +1,6 @@
 # Petster Poster Lab
 
-Interaktiver Frontend-Prototyp für den Full-AI-Pet-Poster-Flow. Vor der Generierung sieht der User nur das Tierfoto und strukturierte Auswahlmöglichkeiten; vier komplette Poster werden erst nach dem Reveal gezeigt.
+Produktionsnaher Full-AI-Pet-Poster-Flow. Vor der Generierung sieht der User das Tierfoto und strukturierte Auswahlmöglichkeiten; zwei kuratierte Poster-Varianten werden erst nach dem Reveal gezeigt.
 
 ## Lokal starten
 
@@ -16,17 +16,17 @@ von der lokalen Vite-Serverroute gelesen und nicht an das Browser-Bundle ausgeli
 ## Enthalten
 
 - Foto-Upload mit neutraler Zuschneideansicht
-- fünf Formatfamilien mit exaktem Seitenverhältnis
+- drei Posterformate A4, A3 und A2 mit exaktem Seitenverhältnis
 - kuratierte Stil-, Kompositions-, Hintergrund- und Farboptionen
 - dynamische Live-Stilvorschau mit fünf konsistenten, kaufnahen KI-generierten Beispielmotiven einschließlich Pencil Sketch
 - sichtbar getrennte Feinabstimmung für Motivgröße, Farbwelt und Schriftwirkung mit aktiver Kombinationsübersicht
 - Textformular ohne verfrühte Postervorschau
-- kosteneffiziente Generierung von vier Artwork-Entwürfen über die OpenAI Image API (`gpt-image-2`, Qualität `low`)
+- kosteneffiziente Generierung von zwei Artwork-Entwürfen über die OpenAI Image API (`gpt-image-2`, Qualität `low`)
 - exakte, responsive Typografie als separate Layout-Ebene statt fehleranfälligem KI-Text im Bild
-- Vierer-Reveal mit Auswahl und vordefinierten Änderungsoptionen
+- Zweier-Reveal mit Auswahl und vordefinierten Änderungsoptionen
 
 Die Fortschrittsanzeige und der Quality-Gate-Text sind weiterhin UI-seitig dargestellt;
-die vier Artwork-Ebenen werden real über die API erzeugt. Das Referenzfoto wird vor dem
+die zwei Artwork-Ebenen werden real über die API erzeugt. Das Referenzfoto wird vor dem
 Upload auf maximal 1024 Pixel Kantenlänge optimiert, die Ausgabe nutzt die kleinste für
 das gewählte Seitenverhältnis zulässige Auflösung. Name, Untertitel, Zusatzinfo und
 Spruch werden verlustfrei im Frontend gesetzt und überdecken nicht mehr das Tiermotiv.

@@ -6,7 +6,7 @@ Der Flow besteht aus Foto, Format, Stil, Texte, Generierung und Ergebnis. Die Fo
 
 Nutze Lovable Cloud für Auth, Daten und Edge Functions. Der Browser darf Railway niemals direkt für geschützte Aufrufe kontaktieren. Erstelle die Edge Functions `petster-usage`, `petster-generate` und `shopify-create-cart`. Sie authentifizieren den Lovable-Cloud-Nutzer und rufen Railway beziehungsweise Shopify ausschließlich mit serverseitigen Secrets auf. Der genaue Ablauf steht in `LOVABLE-INTEGRATION.md`, der Railway-Vertrag in `config/openapi.yaml`.
 
-Sende niemals freie Prompts, Textfelder oder den OpenAI-Key an die Generierungsroute. An Railway gehen nur `format`, `variants` und die vier validierten Style-IDs. Name, Untertitel, Zusatzinfo und Spruch werden erst im Browser als separate, responsive Typografieebene über das zurückgegebene Artwork gelegt.
+Sende niemals freie Prompts, Textfelder oder den OpenAI-Key an die Generierungsroute. An Railway gehen nur `format`, `variants` sowie die sechs validierten Customizing-IDs `artStyle`, `crop`, `colorMood`, `typeMood`, `intensity` und `background`. Fordere genau zwei Varianten an. Name, Untertitel, Zusatzinfo und Spruch werden erst im Browser als separate, responsive Typografieebene über das zurückgegebene Artwork gelegt.
 
 Zeige bei `MONTHLY_LIMIT_REACHED` eine klare Kontingentmeldung und starte keine automatische Wiederholung. Bei Netzwerkfehlern darf ein erneuter Versuch ausschließlich durch eine bewusste Nutzeraktion ausgelöst werden, damit keine doppelten Bildkosten entstehen.
 
