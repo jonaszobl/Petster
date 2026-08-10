@@ -125,3 +125,18 @@ test('rejects untrusted customizing values', async () => {
   assert.equal(response.status, 400)
   assert.equal(body.error.code, 'INVALID_CONFIG')
 })
+
+test('enforces the production two-variant cost ceiling', async () => {
+  const response = await fetch(`${baseUrl}/api/v1/generations`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-user-id': 'variant-limit-user' },
+    body: JSON.stringify({
+      ...validBody,
+      config: { ...validBody.config, variants: 3 },
+    }),
+  })
+  const body = await response.json() as { error: { code: string; message: string } }
+  assert.equal(response.status, 400)
+  assert.equal(body.error.code, 'TOO_MANY_VARIANTS')
+  assert.match(body.error.message, /Maximal 2 Varianten/)
+})

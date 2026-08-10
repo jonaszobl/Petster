@@ -4,7 +4,7 @@ import { buildPrompt } from './prompt.js'
 
 test('keeps typography out of the generated artwork', () => {
   const prompt = buildPrompt({
-    format: 'a2', variants: 4,
+    format: 'a2', variants: 2,
     style: {
       artStyle: 'pencil-sketch', crop: 'spacious', colorMood: 'mono', typeMood: 'modern',
       intensity: 'strong', background: 'arch',
