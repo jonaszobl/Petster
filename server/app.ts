@@ -97,7 +97,11 @@ export function createApp(options: { config: ServerConfig; quota: QuotaStore; ge
   app.use(express.json({ limit: '18mb' }))
   app.use('/assets', express.static(path.resolve('lovable-assets'), { maxAge: '7d', immutable: true, fallthrough: false }))
 
-  app.get('/health', (_request, response) => response.json({ ok: true, service: 'petster-image-api' }))
+  app.get('/health', (_request, response) => response.json({
+    ok: true,
+    service: 'petster-image-api',
+    revision: process.env.RAILWAY_GIT_COMMIT_SHA?.slice(0, 7) || 'local',
+  }))
   app.get('/api/v1/catalog', (_request, response) => response.json(publicCatalog()))
 
   const authenticate = createAuthMiddleware({
